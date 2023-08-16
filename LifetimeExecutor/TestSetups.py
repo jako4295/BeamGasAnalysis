@@ -12,9 +12,7 @@ class Tests:
         ring_type = 'PS'
         data = DataObject(ring_type=ring_type)
         ps_object = Calculator(
-            data.pressure_data,
-            data.gas_fractions,
-            data.projectile_data,
+            data
         )
         tau = ps_object.calculate_full_lifetime()
 
@@ -38,7 +36,7 @@ class Tests:
         Note: I think I_p is correct except for Pb. Reference for this is:
             https://en.wikipedia.org/wiki/Ionization_energies_of_the_elements_(data_page)
             First column on this page is the energy it takes to remove the first electron from the atom. This is
-            reffered to as the forst ionization energy. I_p is first ionization potential of projectile.
+            referred to as the first ionization energy. I_p is first ionization potential of projectile.
 
             It may be in wrong units and I_p for Pb54 in our data is not equal to the one on the website.
         """
@@ -52,9 +50,7 @@ class Tests:
         for I_p in I_p_list:
             data = DataObject(ring_type=ring_type)
             ps_object = Calculator(
-                data.pressure_data,
-                data.gas_fractions,
-                data.projectile_data.loc[[projectile]],
+                data
             )
             ps_object.I_p = I_p
             sigma_el, sigma_ec = ps_object.get_all_molecular_sigmas()
@@ -91,9 +87,7 @@ class Tests:
         for n_0 in n_0_list:
             data = DataObject(ring_type=ring_type)
             ps_object = Calculator(
-                data.pressure_data,
-                data.gas_fractions,
-                data.projectile_data.loc[[projectile]],
+                data
             )
             ps_object.n_0 = n_0
             sigma_el, sigma_ec = ps_object.get_all_molecular_sigmas()

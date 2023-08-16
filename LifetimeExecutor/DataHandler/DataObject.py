@@ -1,8 +1,11 @@
 import pandas as pd
 
+from .BeamDataHandler import BeamData
 
-class DataObject:
+
+class DataObject(BeamData):
     def __init__(self, ring_type: str):
+        super().__init__()
         self.gas_fractions = pd.read_csv("DataHandler/Gas_fractions.csv", index_col=0)
         self.pressure_data = pd.read_csv("DataHandler/Pressure_data.csv", index_col=0).T
         self.projectile_data = pd.read_csv("DataHandler/Projectile_data.csv", index_col=0)
