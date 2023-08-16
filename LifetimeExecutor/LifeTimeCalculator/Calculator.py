@@ -7,8 +7,12 @@ from .ResidualGasConstantType import ResidualGasConstantType as res_gas
 
 class Calculator(Tools, ElectronMethods):
     # TODO: Add method for calculating sigmas based on the lifetime.
-    #       Also add method for getting the lifetime based on data from the ring (which can the use the aforementioned
+    #
+    # TODO: Also add method for getting the lifetime based on data from the ring (which can the use the aforementioned
     #       method)
+    #       - Perhaps this method will be good for fitting the data to a lifetime (first fit, then calculate when the
+    #       curve is zero):
+    #          https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.curve_fit.html
     beta: float = None
     Z_p: float = None
     q: float = None
@@ -39,32 +43,38 @@ class Calculator(Tools, ElectronMethods):
             setattr(self, nam, projectile_data[name])
 
     def calculate_sigma_electron_loss_parser(self) -> callable:
-        sigma_el = self.get_method(ElectronEnum.Shevelko)
+        sigma_el = self.get_method(ElectronEnum.DuBois_Shevelko)
         return sigma_el
 
     def calculate_sigma_electron_capture_parser(self):
         sigma_ec = self.get_method(ElectronEnum.Schlachter)
         return sigma_ec
 
-    @property
-    def calculate_full_lifetime(self):
+    def get_all_molecular_sigmas(self) -> tuple[pd.DataFrame, pd.DataFrame]:
         sigmas_el = {}
         sigmas_ec = {}
         for attr, Z_val in res_gas.__dict__.items():
             if attr.startswith('__'):
                 continue
             sigmas_el[attr[2:]] = self.calculate_sigma_electron_loss_parser()(
-                self.beta,
                 Z_val,
+                self.Z_p,
+                self.q,
+                self.e_kin,
                 self.I_p,
                 self.n_0,
-                self.q
+                self.beta,
             )
             # I haven't looked at the units, but Elias converts ekin from MeV to keV, so I'm doing the same here
             sigmas_ec[attr[2:]] = self.calculate_sigma_electron_capture_parser()(self.q, Z_val, self.e_kin * 1e3)
 
         sigma_molecular_el = self.get_molecular_cross_sections(sigmas_el)
         sigma_molecular_ec = self.get_molecular_cross_sections(sigmas_ec)
+
+        return sigma_molecular_el, sigma_molecular_ec
+
+    def calculate_full_lifetime(self) -> pd.Series:
+        sigma_molecular_el, sigma_molecular_ec = self.get_all_molecular_sigmas()
 
         molecular_density_n = self.get_molecular_densities(self.gas_fractions, self.pressure_status)
 
