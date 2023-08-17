@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
+from scipy import constants
 
 from DataHandler import DataObject
 from LifeTimeCalculator import Calculator
@@ -112,3 +113,42 @@ class Tests:
             ax[i].legend()
         fig.tight_layout()
         fig.show()
+
+    @staticmethod
+    def get_lifetime_from_data():
+        ring_type = 'PS'
+        data = DataObject(ring_type=ring_type)
+        ps_object = Calculator(
+            data
+        )
+        tau = ps_object.get_lifetime_from_data(
+            injection_idx=270,
+            extraction_idx=1500,
+        )
+
+        # from lifetime to cross-section:
+        data.pressure_data = data.pressure_data * 1e2
+        molecular_density_n = ps_object.get_molecular_densities(data.gas_fractions, data.pressure_data)
+        beta = data.projectile_data['PS_beta']
+        sigma_from_tau = 1/(molecular_density_n * tau[0] * beta['Pb54'] * constants.c)
+
+        sigma_el_est, sigma_ec_est = ps_object.get_all_molecular_sigmas()
+        sigma_est = sigma_el_est.loc['Pb54'] + sigma_ec_est.loc['Pb54']
+        sigma_est.name = "sigma_est"
+        sigma_from_tau.name = "sigma_from_tau"
+        sig = pd.concat([sigma_est, sigma_from_tau], axis=1)
+
+        fig, ax = plt.subplots()
+        bar = sig.loc[["H2", "H2O"]].plot.bar(ax=ax, logy=True)
+        ax.set_ylabel(r"Cross section $\sigma$")
+        ax.set_xlabel("Projectiles")
+        for i, container in enumerate(bar.containers):
+            print(i, container)
+            bar.bar_label(
+                container,
+                fmt='%.2e'
+            )
+        fig.tight_layout()
+        fig.show()
+
+

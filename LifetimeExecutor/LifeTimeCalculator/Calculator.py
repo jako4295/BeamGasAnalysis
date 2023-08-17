@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import scipy
 from scipy.optimize import curve_fit
 
 from DataHandler import DataObject
@@ -92,9 +93,9 @@ class Calculator(Tools, ElectronMethods):
 
         return tau
 
-    def get_lifetime_from_data(self, injection_idx, extraction_idx) -> np.ndarray:
-        # TODO: Finish this method
-        for i, col in self.data.elements.columns:
+    def get_lifetime_from_data(self, injection_idx, extraction_idx, fitting_statistics=True) -> pd.Series:
+        tau_series = pd.Series(dtype=float)
+        for i, col in enumerate(self.data.elements.columns):
             test_element = self.data.elements[col][injection_idx:extraction_idx]
             xdata = np.array(np.arange(len(test_element)), dtype=float)
             ydata = np.array(test_element.values, dtype=float).reshape(-1)
@@ -102,5 +103,19 @@ class Calculator(Tools, ElectronMethods):
             fun = lambda x_variable, a, b: a * np.exp(-b * x_variable)
 
             optimal_params, pcov = curve_fit(fun, xdata, ydata, maxfev=2000)
-            fun_optimal = lambda x_variable: fun(x_variable, *optimal_params)
-        pass
+
+            tau = 1 / optimal_params[1]
+            tau_series[col] = tau
+
+            if fitting_statistics:
+                self.get_lifetime_fit_statistics(
+                    fun,
+                    optimal_params,
+                    pcov,
+                    xdata,
+                    ydata,
+                    self.data,
+                    i
+                )
+
+        return tau_series

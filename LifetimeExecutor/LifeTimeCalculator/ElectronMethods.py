@@ -35,7 +35,7 @@ class ElectronMethods:
         I_p: pd.Series,
         n_0: pd.Series,
         beta: pd.Series,
-    ):
+    ) -> pd.Series:
         par = np.array([
             10.88,
             0.95,
@@ -52,6 +52,7 @@ class ElectronMethods:
             Z_p, q, E_kin, I_p, n_0, beta, par)
         dubois_shevelko_comb *= 1e-4  # conversion to SI units
 
+        dubois_shevelko_comb[q == Z_p] = 0  # Fully stripped ion (i.e. q = Z_p) cannot lose electrons
         return dubois_shevelko_comb
 
     @classmethod
@@ -65,7 +66,7 @@ class ElectronMethods:
         F1 = (N_eff + par[0] * (Z - N_eff) * (g - 1)).abs().apply(lambda x: x if x < Z else Z)  # min(Z, F1) for Series
         F2 = Z * (1 - np.sqrt(1 - F1 / Z))
         F3 = (-(F2 ** par[1])) / (
-            np.sqrt(2 * E_kin / AU) + np.sqrt(2 * I_p / m_e) / alpha
+            (np.sqrt(2 * E_kin / AU) + np.sqrt(2 * I_p / m_e)) / alpha
         )
         return F1 + (F2 * np.exp(F3)) ** 2
 
@@ -82,8 +83,11 @@ class ElectronMethods:
     ) -> pd.Series:
         alpha = 7.2973525376 * (10 ** (-3))
         Ry = 13.606 / 1e3  # Rydberg energy in keV
+        # g = 1/(np.sqrt(1-beta))  # Lorentz factor
+
         AU = 931.5016  # MeV
-        g = 1 + E_kin / AU
+        g = 1.0 + E_kin / AU  # gamma factor
+        beta = np.sqrt(1.0 - 1.0 / g**2)  # beta factor
         u = ((beta / alpha) ** 2) / (I_p / Ry)
         return (
             ((par[5] * (10 ** (-16)) * u) / (u**2 + par[6]))
@@ -106,8 +110,9 @@ class ElectronMethods:
             * (1 - np.exp(-0.037 * E_tilde**2.2))
             * (1 - np.exp(-2.44 * (10 ** (-5)) * E_tilde**2.6))
         )
+        sigma = (sigma_tilde * (q**0.5)) / (Z**1.8)
 
-        return (sigma_tilde * (q**0.5)) / (Z**1.8)
+        return sigma * 1e-4  # conversion to SI units (m^2)
 
     @classmethod
     def shevelko(
