@@ -105,7 +105,7 @@ class Tests:
             ax[i].plot(sig_el_list[gas].values, '.', label="EL")
             ax[i].plot(sig_ec_list[gas].values, '.', label="EC")
             ax[i].set_title(gas)
-            ax[i].set_xlabel(r"$I_p$ [eV]")
+            ax[i].set_xlabel(r"$n_0p$")
             if i == 0:
                 ax[i].set_ylabel(r"$\sigma$ [m$^2$]")
             #ax[i].set_xscale('log')
@@ -116,6 +116,8 @@ class Tests:
 
     @staticmethod
     def get_lifetime_from_data():
+        # Todo: Maybe setup test such that sigma is calculated for all tau values found from the data and give a
+        #  confidence measure for the sigma estimate based on the different cycles.
         ring_type = 'PS'
         data = DataObject(ring_type=ring_type)
         ps_object = Calculator(
@@ -127,10 +129,7 @@ class Tests:
         )
 
         # from lifetime to cross-section:
-        data.pressure_data = data.pressure_data * 1e2
-        molecular_density_n = ps_object.get_molecular_densities(data.gas_fractions, data.pressure_data)
-        beta = data.projectile_data['PS_beta']
-        sigma_from_tau = 1/(molecular_density_n * tau[0] * beta['Pb54'] * constants.c)
+        sigma_from_tau = ps_object.get_sigma_from_lifetime(tau)
 
         sigma_el_est, sigma_ec_est = ps_object.get_all_molecular_sigmas()
         sigma_est = sigma_el_est.loc['Pb54'] + sigma_ec_est.loc['Pb54']
@@ -140,10 +139,9 @@ class Tests:
 
         fig, ax = plt.subplots()
         bar = sig.loc[["H2", "H2O"]].plot.bar(ax=ax, logy=True)
-        ax.set_ylabel(r"Cross section $\sigma$")
+        ax.set_ylabel(r"Cross section $\sigma$ [m$^2$]")
         ax.set_xlabel("Projectiles")
         for i, container in enumerate(bar.containers):
-            print(i, container)
             bar.bar_label(
                 container,
                 fmt='%.2e'

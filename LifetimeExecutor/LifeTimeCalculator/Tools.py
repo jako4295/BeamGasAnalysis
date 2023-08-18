@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from scipy import constants, stats
+from scipy import constants
 
 from DataHandler import DataObject
 
@@ -57,44 +57,3 @@ class Tools:
             tau_df[projectile] = 1 / (molecular_density_n * projectile_row * beta[projectile] * c_light)
 
         return tau_df
-
-    @staticmethod
-    def get_lifetime_fit_statistics(
-            fun: callable,
-            optimal_params: np.ndarray,
-            pcov: np.ndarray,
-            xdata: np.ndarray,
-            ydata: np.ndarray,
-            data: DataObject,
-            idx: int
-    ):
-        fun_optimal = lambda x_variable: fun(x_variable, *optimal_params)
-
-        y_estimate = fun_optimal(xdata)
-        res = ydata - y_estimate
-        ss_res = np.sum(res**2)
-        ss_tot = np.sum((ydata - np.mean(ydata)) ** 2)
-        r_squared = 1 - (ss_res / ss_tot)
-        # for 95% confidence interval:
-        # https://stats.stackexchange.com/questions/72047/when-fitting-a-curve-how-do-i-calculate-the-95-confidence-interval-for-my-fitt
-        SE_a = np.sqrt(((ss_res / (len(xdata) - 2)) * pcov[0, 0]))
-        t_quantile_a = stats.t(len(xdata) - 2).ppf(0.95)
-        a_pm = t_quantile_a * SE_a
-
-        SE_b = np.sqrt(((ss_res / (len(xdata) - 2)) * pcov[1, 1]))
-        t_quantile_b = stats.t(len(xdata) - 2).ppf(0.95)
-        b_pm = t_quantile_b * SE_b
-
-        print("#"*47 + "\nColumn nr: " + str(idx) + "\n" + "#"*47)
-        print(f"a is estimated to: {optimal_params[0]:.2e} +- {a_pm:.2e}\nb is" +
-              f" estimated to: {optimal_params[1]:.2e} +- {b_pm:.2e} \nR^2={r_squared:.5f}\nLifetime is " +
-              " "*10 + f"{(1/optimal_params[1])*data.sample_frequency[idx]} \nLifetime upper bound: " +
-              f"{(1/(optimal_params[1] - b_pm))*data.sample_frequency[idx]} \nLifetime lower bound: " +
-              f"{(1/(optimal_params[1] + b_pm))*data.sample_frequency[idx]}\n")
-
-        # plt.plot(xdata, ydata, ".")
-        # plt.plot(xdata, y_estimate)
-        # lifetime_sec = ((1/optimal_params[1])*data.sample_frequency[idx]).total_seconds()
-        # plt.title(f"{idx} - $R^2$: {r_squared:.3f} - lifetime: {lifetime_sec:.3f} s")
-        #
-        # plt.show()

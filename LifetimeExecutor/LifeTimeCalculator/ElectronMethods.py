@@ -48,7 +48,7 @@ class ElectronMethods:
             1.00514,
             6.13667,
         ])
-        dubois_shevelko_comb = cls._dubois_comb(Z, E_kin, I_p, par) * cls._shevelko_comb(
+        dubois_shevelko_comb = cls._dubois_comb(Z, E_kin, I_p, beta, par) * cls._shevelko_comb(
             Z_p, q, E_kin, I_p, n_0, beta, par)
         dubois_shevelko_comb *= 1e-4  # conversion to SI units
 
@@ -56,11 +56,11 @@ class ElectronMethods:
         return dubois_shevelko_comb
 
     @classmethod
-    def _dubois_comb(cls, Z: int, E_kin: pd.Series, I_p: pd.Series, par: np.ndarray) -> pd.Series:
+    def _dubois_comb(cls, Z: int, E_kin: pd.Series, I_p: pd.Series, beta: pd.Series, par: np.ndarray) -> pd.Series:
         alpha = 7.2973525376 * (10 ** (-3))
         AU = 931.5016  # MeV
         m_e = 510.998  # keV
-        g = 1 + E_kin / AU
+        g = 1/(np.sqrt(1 - beta ** 2))  # Lorentz factor
 
         N_eff = min(10 ** (par[3] * np.log10(Z) + par[4] * np.log10(Z) ** 2), Z)
         F1 = (N_eff + par[0] * (Z - N_eff) * (g - 1)).abs().apply(lambda x: x if x < Z else Z)  # min(Z, F1) for Series
@@ -83,11 +83,11 @@ class ElectronMethods:
     ) -> pd.Series:
         alpha = 7.2973525376 * (10 ** (-3))
         Ry = 13.606 / 1e3  # Rydberg energy in keV
-        # g = 1/(np.sqrt(1-beta))  # Lorentz factor
+        g = 1/(np.sqrt(1-beta**2))  # Lorentz factor
 
-        AU = 931.5016  # MeV
-        g = 1.0 + E_kin / AU  # gamma factor
-        beta = np.sqrt(1.0 - 1.0 / g**2)  # beta factor
+        # AU = 931.5016  # MeV
+        # g = 1.0 + E_kin / AU  # gamma factor
+        # beta = np.sqrt(1.0 - 1.0 / g**2)  # beta factor
         u = ((beta / alpha) ** 2) / (I_p / Ry)
         return (
             ((par[5] * (10 ** (-16)) * u) / (u**2 + par[6]))
