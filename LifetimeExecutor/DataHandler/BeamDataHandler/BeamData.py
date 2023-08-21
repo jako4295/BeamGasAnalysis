@@ -8,8 +8,8 @@ class BeamData:
 
     def __init__(self):
         path = "DataHandler/BeamDataHandler/"
-        self.elements = pd.read_csv(path+'df_elements1.csv', index_col=0)
-        self.df_info = pd.read_csv(path+'df_info1.csv', index_col=0)
+        self.elements = pd.read_csv(path+'df_elements1-long.csv', index_col=0)
+        self.df_info = pd.read_csv(path+'df_info1-long.csv', index_col=0)
 
         self.nxcals_timestamp = self.df_info["nxcals_timestamp"]
         self.nxcals_timestamp2 = self.df_info["nxcals_timestamp2"]

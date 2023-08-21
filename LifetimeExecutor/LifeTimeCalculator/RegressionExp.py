@@ -70,8 +70,8 @@ class StatisticalSummary:
         fig, ax = plt.subplots()
         da = 0.1
         A, B = np.meshgrid(
-            np.linspace(np.mean(a_arr) * (1 - da), np.mean(a_arr) * (1 + da), 50),
-            np.linspace(np.mean(b_arr) * (1 - da), np.max(b_arr) * (1 + da), 50),
+            np.linspace(np.min(a_arr) * (1 - da), np.max(a_arr) * (1 + da), 50),
+            np.linspace(np.min(b_arr) * (1 - da), np.max(b_arr) * (1 + da), 50),
         )
         y = np.mean(a_arr) * np.exp(-np.mean(b_arr) * x)
         r2 = np.sum((y - A[:, :, None] * np.exp(-B[:, :, None] * x)) ** 2, axis=2)
