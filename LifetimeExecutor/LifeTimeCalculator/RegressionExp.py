@@ -73,8 +73,8 @@ class StatisticalSummary:
             np.linspace(np.min(a_arr) * (1 - da), np.max(a_arr) * (1 + da), 50),
             np.linspace(np.min(b_arr) * (1 - da), np.max(b_arr) * (1 + da), 50),
         )
-        y = np.mean(a_arr) * np.exp(-np.mean(b_arr) * x)
-        r2 = np.sum((y - A[:, :, None] * np.exp(-B[:, :, None] * x)) ** 2, axis=2)
+        y = np.mean(a_arr) * np.exp(-x / np.mean(b_arr))
+        r2 = np.sum((y - A[:, :, None] * np.exp(-x / B[:, :, None])) ** 2, axis=2)
         r2 = np.log(r2)
         ax.contourf(A, B, r2, alpha=0.5)
         for a_, b_ in zip(a_arr, b_arr):
@@ -187,9 +187,9 @@ class StatisticalSummary:
             f"a is estimated to: {optimal_params[0]:.2e} +- {a_pm:.2e}\nb is"
             + f" estimated to: {optimal_params[1]:.2e} +- {b_pm:.2e} \nR^2={r_squared:.5f}\nLifetime is "
             + " " * 10
-            + f"{(1/optimal_params[1])*data.sample_frequency[idx]} \nLifetime upper bound: "
-            + f"{(1/(optimal_params[1] - b_pm))*data.sample_frequency[idx]} \nLifetime lower bound: "
-            + f"{(1/(optimal_params[1] + b_pm))*data.sample_frequency[idx]}\n"
+            + f"{optimal_params[1]*data.sample_frequency[idx]} \nLifetime upper bound: "
+            + f"{(optimal_params[1] - b_pm)*data.sample_frequency[idx]} \nLifetime lower bound: "
+            + f"{(optimal_params[1] + b_pm)*data.sample_frequency[idx]}\n"
         )
 
         # plt.plot(xdata, ydata, ".")

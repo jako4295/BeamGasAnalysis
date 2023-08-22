@@ -105,7 +105,7 @@ class Tests:
             ax[i].plot(sig_el_list[gas].values, '.', label="EL")
             ax[i].plot(sig_ec_list[gas].values, '.', label="EC")
             ax[i].set_title(gas)
-            ax[i].set_xlabel(r"$n_0p$")
+            ax[i].set_xlabel(r"$n_0$")
             if i == 0:
                 ax[i].set_ylabel(r"$\sigma$ [m$^2$]")
             #ax[i].set_xscale('log')

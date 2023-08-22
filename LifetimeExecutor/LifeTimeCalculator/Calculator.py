@@ -106,12 +106,13 @@ class Calculator(Tools, ElectronMethods):
             xdata = np.array(np.arange(len(test_element)), dtype=float)
             ydata = np.array(test_element.values, dtype=float).reshape(-1)
 
-            fun = lambda x_variable, a, b: a * np.exp(-b * x_variable)
+            fun = lambda x_variable, a, b: a * np.exp(-x_variable / b)
 
             optimal_params, pcov = curve_fit(fun, xdata, ydata, maxfev=2000)
             # optimal_params = ExpRegression(xdata, ydata).optimal_parameters
 
-            tau = 1 / optimal_params[1]
+            #tau = 1 / optimal_params[1]
+            tau = optimal_params[1]
             tau_series[col] = tau
 
             a_arr[i], b_arr[i] = optimal_params
@@ -123,8 +124,8 @@ class Calculator(Tools, ElectronMethods):
         if return_lifetime_band:
             x = np.arange(extraction_idx - injection_idx)
             b_center, b_deviation = StatisticalSummary.plot_confidence_ellipse(x, a_arr, b_arr)
-            tau_series["tau_lower"] = 1/(b_center+b_deviation)
-            tau_series["tau_upper"] = 1/(b_center-b_deviation)
+            tau_series["tau_lower"] = b_center+b_deviation
+            tau_series["tau_upper"] = b_center-b_deviation
 
         return tau_series
 
@@ -132,7 +133,7 @@ class Calculator(Tools, ElectronMethods):
         molecular_density_n = self.get_molecular_densities(
             self.data.gas_fractions, self.data.pressure_data
         )
-        beta = self.data.projectile_data["PS_beta"]
+        beta = self.beta
         if ('tau_upper' and 'tau_lower') in tau.index:
             sigma_from_tau = pd.DataFrame(
                 {
