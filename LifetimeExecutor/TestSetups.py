@@ -10,11 +10,9 @@ from LifeTimeCalculator import Calculator
 class Tests:
     @staticmethod
     def get_lifetimes_from_sigma_estimates():
-        ring_type = 'PS'
+        ring_type = "PS"
         data = DataObject(ring_type=ring_type)
-        ps_object = Calculator(
-            data
-        )
+        ps_object = Calculator(data)
         tau = ps_object.calculate_full_lifetime()
 
         fig, ax = plt.subplots()
@@ -22,10 +20,7 @@ class Tests:
         ax.set_ylabel(r"Lifetime $\tau$ [s]")
         ax.set_xlabel("Projectiles")
         for i, container in enumerate(bar.containers):
-            bar.bar_label(
-                container,
-                labels=[f"{e:,.1e}" for e in tau]
-            )
+            bar.bar_label(container, labels=[f"{e:,.1e}" for e in tau])
         fig.tight_layout()
         fig.show()
 
@@ -50,9 +45,7 @@ class Tests:
         I_p_list = np.linspace(0.01, 20, 50)
         for I_p in I_p_list:
             data = DataObject(ring_type=ring_type)
-            ps_object = Calculator(
-                data
-            )
+            ps_object = Calculator(data)
             ps_object.I_p = I_p
             sigma_el, sigma_ec = ps_object.get_all_molecular_sigmas()
 
@@ -63,7 +56,7 @@ class Tests:
         sig_ec_list = pd.DataFrame(sig_ec_list).T.rename_axis("I_p")
 
         fig, ax = plt.subplots(1, 3)
-        chosen_gasses = ['H2', 'Ar', 'CO2']
+        chosen_gasses = ["H2", "Ar", "CO2"]
         for i, gas in enumerate(chosen_gasses):
             ax[i].plot(sig_el_list[gas], label="EL")
             ax[i].plot(sig_ec_list[gas], label="EC")
@@ -71,8 +64,8 @@ class Tests:
             ax[i].set_xlabel(r"$I_p$ [eV]")
             if i == 0:
                 ax[i].set_ylabel(r"$\sigma$ [m$^2$]")
-            #ax[i].set_xscale('log')
-            ax[i].set_yscale('log')
+            # ax[i].set_xscale('log')
+            ax[i].set_yscale("log")
             ax[i].legend()
         fig.tight_layout()
         fig.show()
@@ -84,12 +77,12 @@ class Tests:
 
         sig_el_list = {}
         sig_ec_list = {}
-        n_0_list = np.arange(1, 11)  # corresponds to [website KeV, website eV, our data]
+        n_0_list = np.arange(
+            1, 11
+        )  # corresponds to [website KeV, website eV, our data]
         for n_0 in n_0_list:
             data = DataObject(ring_type=ring_type)
-            ps_object = Calculator(
-                data
-            )
+            ps_object = Calculator(data)
             ps_object.n_0 = n_0
             sigma_el, sigma_ec = ps_object.get_all_molecular_sigmas()
 
@@ -100,16 +93,16 @@ class Tests:
         sig_ec_list = pd.DataFrame(sig_ec_list).T.rename_axis("I_p")
 
         fig, ax = plt.subplots(1, 3)
-        chosen_gasses = ['H2', 'Ar', 'CO2']
+        chosen_gasses = ["H2", "Ar", "CO2"]
         for i, gas in enumerate(chosen_gasses):
-            ax[i].plot(sig_el_list[gas].values, '.', label="EL")
-            ax[i].plot(sig_ec_list[gas].values, '.', label="EC")
+            ax[i].plot(sig_el_list[gas].values, ".", label="EL")
+            ax[i].plot(sig_ec_list[gas].values, ".", label="EC")
             ax[i].set_title(gas)
             ax[i].set_xlabel(r"$n_0$")
             if i == 0:
                 ax[i].set_ylabel(r"$\sigma$ [m$^2$]")
-            #ax[i].set_xscale('log')
-            ax[i].set_yscale('log')
+            # ax[i].set_xscale('log')
+            ax[i].set_yscale("log")
             ax[i].legend()
         fig.tight_layout()
         fig.show()
@@ -118,11 +111,9 @@ class Tests:
     def get_lifetime_from_data():
         # Todo: Maybe setup test such that sigma is calculated for all tau values found from the data and give a
         #  confidence measure for the sigma estimate based on the different cycles.
-        ring_type = 'PS'
+        ring_type = "PS"
         data = DataObject(ring_type=ring_type)
-        ps_object = Calculator(
-            data
-        )
+        ps_object = Calculator(data)
         tau = ps_object.get_lifetime_from_data(
             injection_idx=270,
             extraction_idx=1500,
@@ -132,7 +123,7 @@ class Tests:
         sigma_from_tau = ps_object.get_sigma_from_lifetime(tau)
 
         sigma_el_est, sigma_ec_est = ps_object.get_all_molecular_sigmas()
-        sigma_est = sigma_el_est.loc['Pb54'] + sigma_ec_est.loc['Pb54']
+        sigma_est = sigma_el_est.loc["Pb54"] + sigma_ec_est.loc["Pb54"]
         sigma_est.name = "sigma_est"
         sigma_from_tau.name = "sigma_from_tau"
         sig = pd.concat([sigma_est, sigma_from_tau], axis=1)
@@ -142,11 +133,6 @@ class Tests:
         ax.set_ylabel(r"Cross section $\sigma$ [m$^2$]")
         ax.set_xlabel("Projectiles")
         for i, container in enumerate(bar.containers):
-            bar.bar_label(
-                container,
-                fmt='%.2e'
-            )
+            bar.bar_label(container, fmt="%.2e")
         fig.tight_layout()
         fig.show()
-
-
