@@ -96,11 +96,15 @@ class Calculator(Tools, ElectronMethods):
         return tau
 
     def get_lifetime_from_data(
-        self, injection_idx: int, extraction_idx: int, fitting_statistics=True, return_lifetime_band=True
+        self,
+        injection_idx: int,
+        extraction_idx: int,
+        fitting_statistics=True,
+        return_lifetime_band=True,
     ) -> pd.Series:
         tau_series = pd.Series(dtype=float)
         a_arr = np.zeros(len(self.data.elements.columns))
-        b_arr = np.zeros(len(self.data.elements.columns))
+        tau_arr = np.zeros(len(self.data.elements.columns))
         for i, col in enumerate(self.data.elements.columns):
             test_element = self.data.elements[col][injection_idx:extraction_idx]
             xdata = np.array(np.arange(len(test_element)), dtype=float)
@@ -111,11 +115,11 @@ class Calculator(Tools, ElectronMethods):
             optimal_params, pcov = curve_fit(fun, xdata, ydata, maxfev=2000)
             # optimal_params = ExpRegression(xdata, ydata).optimal_parameters
 
-            #tau = 1 / optimal_params[1]
+            # tau = 1 / optimal_params[1]
             tau = optimal_params[1]
             tau_series[col] = tau
 
-            a_arr[i], b_arr[i] = optimal_params
+            a_arr[i], tau_arr[i] = optimal_params
             if fitting_statistics:
                 StatisticalSummary.get_lifetime_fit_statistics(
                     fun, optimal_params, pcov, xdata, ydata, self.data, i
@@ -123,24 +127,31 @@ class Calculator(Tools, ElectronMethods):
 
         if return_lifetime_band:
             x = np.arange(extraction_idx - injection_idx)
-            b_center, b_deviation = StatisticalSummary.plot_confidence_ellipse(x, a_arr, b_arr)
-            tau_series["tau_lower"] = b_center+b_deviation
-            tau_series["tau_upper"] = b_center-b_deviation
+            tau_center, tau_deviation = StatisticalSummary.plot_confidence_ellipse(
+                x, a_arr, tau_arr
+            )
+            tau_series["tau_lower"] = tau_center + tau_deviation
+            tau_series["tau_upper"] = tau_center - tau_deviation
 
         return tau_series
 
-    def get_sigma_from_lifetime(self, tau: pd.Series, projectile: str = "Pb54") -> Union[pd.Series, pd.DataFrame]:
+    def get_sigma_from_lifetime(
+        self, tau: pd.Series, projectile: str = "Pb54"
+    ) -> Union[pd.Series, pd.DataFrame]:
         molecular_density_n = self.get_molecular_densities(
             self.data.gas_fractions, self.data.pressure_data
         )
         beta = self.beta
-        if ('tau_upper' and 'tau_lower') in tau.index:
+        if ("tau_upper" and "tau_lower") in tau.index:
             sigma_from_tau = pd.DataFrame(
                 {
-                    name: 1 / (molecular_density_n * tau_val * beta[projectile] * constants.c)
+                    name: 1
+                    / (molecular_density_n * tau_val * beta[projectile] * constants.c)
                     for name, tau_val in tau.iloc[-2:].items()
                 }
             )
         else:
-            sigma_from_tau = 1 / (molecular_density_n * tau.mean() * beta[projectile] * constants.c)
+            sigma_from_tau = 1 / (
+                molecular_density_n * tau.mean() * beta[projectile] * constants.c
+            )
         return sigma_from_tau
