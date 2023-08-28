@@ -96,6 +96,8 @@ class StatisticalSummary:
             color="gray",
             alpha=0.5,
         )
+        ax.set_xlabel("a")
+        ax.set_ylabel(r"$\tau$")
         fig.show()
 
         print(
