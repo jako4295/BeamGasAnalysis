@@ -111,6 +111,8 @@ class Tests:
     def get_lifetime_from_data():
         # Todo: Maybe setup test such that sigma is calculated for all tau values found from the data and give a
         #  confidence measure for the sigma estimate based on the different cycles.
+
+        # PS ring argument should not be changed as it matches the data.
         ring_type = "PS"
         data = DataObject(ring_type=ring_type)
         ps_object = Calculator(data)
@@ -132,7 +134,14 @@ class Tests:
         bar = sig.loc[["H2", "H2O"]].plot.bar(ax=ax, logy=True)
         ax.set_ylabel(r"Cross section $\sigma$ [m$^2$]")
         ax.set_xlabel("Projectiles")
-        for i, container in enumerate(bar.containers):
+        for container in bar.containers:
             bar.bar_label(container, fmt="%.2e")
+        ax.legend(
+            [
+                r"From Semi-emperical $\sigma$",
+                "From data (lower bound)",
+                "From data (upper bound)",
+            ]
+        )
         fig.tight_layout()
         fig.show()
