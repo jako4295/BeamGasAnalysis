@@ -1,16 +1,18 @@
 # BeamGasAnalysis
 In the CERN accelerator complex the ion beams suffer from losses. In this repository we study the losses coming from interactions between the ion beams and residual gas molecules. These effects is modelled by the rest gas collision cross section, which consists of electron loss (EL) cross section, and electron capture (EC) cross section. Hence, we have $\sigma = \sigma_{EC} + \sigma_{EL}$. The EL cross section is calculated using a semi-emperical formula combining the studies from [^1] and [^2]. The EC is calculated using the Schlachter formula[^3]. 
-$$
-I(t) = I(t_0)\times\exp\bigg(- \frac{t}{\tau}\bigg),  \qquad \textrm{where} \quad \tau = \frac{1}{\sigma\,n\,\beta \, c }
-$$
+
 The cross section is inversely proportional to the lifetime of an ion in the following sense, [^4]
+
 $$
 \tau = \frac{1}{\beta c\sigma n},
 $$
+
 where $\beta$ is the relativistic beta ($\beta=v/c$ with $v$ being the velocity of the ion), $c$ is the speed of light, $\sigma$ is the combined EL and EC cross section, and $n$ is the molecular density of the gas in the beam pipe. Hence, it is relatively simple to go from cross section estimates to lifetime estimates and vica versa. From beam data it is also possible to estimate a lifetime for a given ion. This is done with the following beam intensity formula,
+
 $$
 I(t) = a\ \text{e}^{-bt},
 $$
+
 where $\tau = 1/b$ is the lifetime of the ion, and $a$ is a constant. By fitting this formula to the beam data, we can estimate the lifetime of the ion.
 
 ## Usage
