@@ -48,7 +48,7 @@ class Calculator(Tools, ElectronMethods):
         sigma_el = self.get_method(ElectronEnum.DuBois_Shevelko)
         return sigma_el
 
-    def calculate_sigma_electron_capture_parser(self):
+    def calculate_sigma_electron_capture_parser(self) -> callable:
         sigma_ec = self.get_method(ElectronEnum.Schlachter)
         return sigma_ec
 

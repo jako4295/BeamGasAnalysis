@@ -9,7 +9,7 @@ from LifeTimeCalculator import Calculator
 
 class Tests:
     @staticmethod
-    def get_lifetimes_from_sigma_estimates():
+    def get_lifetimes_from_sigma_estimates() -> None:
         ring_type = "PS"
         data = DataObject(ring_type=ring_type)
         ps_object = Calculator(data)
@@ -25,7 +25,7 @@ class Tests:
         fig.show()
 
     @staticmethod
-    def get_sigma_estimates_with_varying_i_p():
+    def get_sigma_estimates_with_varying_i_p() -> None:
         """
         This method will only vary one projectile parameter and plot the resulting sigma estimates for different I_p.
 
@@ -71,7 +71,7 @@ class Tests:
         fig.show()
 
     @staticmethod
-    def get_sigma_estimates_with_varying_n_0():
+    def get_sigma_estimates_with_varying_n_0() -> None:
         ring_type = "PS"
         projectile = "O4"
 
@@ -108,7 +108,7 @@ class Tests:
         fig.show()
 
     @staticmethod
-    def get_lifetime_from_data():
+    def get_lifetime_from_data() -> None:
         # Todo: Maybe setup test such that sigma is calculated for all tau values found from the data and give a
         #  confidence measure for the sigma estimate based on the different cycles.
 

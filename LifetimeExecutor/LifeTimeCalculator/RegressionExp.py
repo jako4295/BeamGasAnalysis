@@ -1,4 +1,5 @@
 from typing import Any
+import matplotlib
 
 import numpy as np
 from matplotlib import transforms, pyplot as plt
@@ -11,6 +12,7 @@ from DataHandler import DataObject
 
 
 class ExpRegression:
+    # Currently this method is not used, but it is kept for future reference.
     # code and derivation from:
     # https://scipython.com/blog/least-squares-fitting-to-an-exponential-function/#comments
     optimal_parameters: tuple[float, float] = None
@@ -22,7 +24,7 @@ class ExpRegression:
         a1, b1 = self.nonlinear_one_dimension_fit(x, y, (a, b))
         self.optimal_parameters = (a1, -b1)
 
-    def log_transformed_fit(self, x: np.ndarray, y: np.ndarray):
+    def log_transformed_fit(self, x: np.ndarray, y: np.ndarray) -> tuple[float, float]:
         """Ordinary linear least-squares fit to ln(y) = ln(a) + bx."""
         n = len(x)
         lny = np.log(y)
@@ -35,7 +37,9 @@ class ExpRegression:
         b = (n * Sxy - Sy * Sx) / den
         return np.exp(a), b
 
-    def nonlinear_one_dimension_fit(self, x, y, prms0):
+    def nonlinear_one_dimension_fit(
+        self, x: np.ndarray, y: np.ndarray, prms0: tuple[float, float]
+    ) -> tuple[float, float]:
         """Indirect nonlinear fit to y = a.exp(bx), treating a = a(b)."""
 
         b0 = prms0[1]
@@ -44,13 +48,15 @@ class ExpRegression:
         a, _ = self._get_a_and_dadb(b, x, y)
         return a, b
 
-    def _dr2db(self, b, x, y):
+    def _dr2db(self, b: float, x: np.ndarray, y: np.ndarray) -> float:
         a, dadb = self._get_a_and_dadb(b, x, y)
         fac1 = y - a * np.exp(b * x)
         fac2 = dadb + a * x
         return -2 * np.sum(fac1 * np.exp(b * x) * fac2)
 
-    def _get_a_and_dadb(self, b, x, y):
+    def _get_a_and_dadb(
+        self, b: float, x: np.ndarray, y: np.ndarray
+    ) -> tuple[float, float]:
         S1 = np.sum(y * np.exp(b * x))
         S2 = np.sum(np.exp(2 * b * x))
         dS1db = np.sum(x * y * np.exp(b * x))
@@ -108,7 +114,15 @@ class StatisticalSummary:
         return b_center, b_deviation
 
     @classmethod
-    def confidence_ellipse(cls, x, y, ax, n_std=3.0, facecolor="none", **kwargs):
+    def confidence_ellipse(
+        cls,
+        x: np.ndarray,
+        y: np.ndarray,
+        ax: plt.Axes,
+        n_std: int = 3.0,
+        facecolor: str = "none",
+        **kwargs,
+    ) -> tuple[matplotlib.patches.Ellipse, float, float]:
         """
         Create a plot of the covariance confidence ellipse of *x* and *y*.
         Parameters
@@ -166,7 +180,7 @@ class StatisticalSummary:
         ydata: np.ndarray,
         data: DataObject,
         idx: int,
-    ):
+    ) -> None:
         fun_optimal = lambda x_variable: fun(x_variable, *optimal_params)
 
         y_estimate = fun_optimal(xdata)

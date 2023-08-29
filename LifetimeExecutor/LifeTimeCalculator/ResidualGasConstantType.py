@@ -4,4 +4,3 @@ class ResidualGasConstantType:
     Z_C = 6
     Z_O = 8
     Z_Ar = 18
-
