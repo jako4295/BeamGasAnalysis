@@ -26,12 +26,12 @@ This method calculates a lifetime for a given ring type (LEIR, PS, or SPS). The 
 ### `Tests.get_sigma_estimates_with_varying_i_p()`
 This method calculates the cross section for a given ring type (LEIR, PS, or SPS). The cross sections are calculated using the methods referred to above [^1][^2][^3]. The cross sections are calculated for different ionization potentials $I_p$ to see the impact of this paremeter.
 
-![Cross section estimates with varying $I_p$ for PS](Plots/sigma_vary_ip_ps.png)
+![Cross section estimates with varying I for PS](Plots/sigma_vary_ip_ps.png)
 
 ### `Tests.get_sigma_estimates_with_varying_n_0()`
 This method calculates the cross section for a given ring type (LEIR, PS, or SPS). The cross sections are calculated using the methods referred to above [^1][^2][^3]. The cross sections are calculated for different principle quantum numbers $n_0$ to see the impact of this paremeter.
 
-![Cross section estimates with varying $n_0$ for PS](Plots/sigma_vary_n0_ps.png)
+![Cross section estimates with varying n for PS](Plots/sigma_vary_n0_ps.png)
 
 ### `Tests.get_lifetime_from_data()`
 This method gets an estimate of the lifetime based on the beam data from `DataObject().elements`. The lifetime is estimated by fitting the beam intensity formula to the beam data. This lifetime is then compared to the cross section estimates in the cross section domain. Note that when the lifetime is found from the cross section then from the inverse proportionality we have an $n$ for each residual gas in the beam pipe. Hence we have a cross section comparison for each residual gas.
