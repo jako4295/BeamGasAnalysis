@@ -69,24 +69,37 @@ class ExpRegression:
 class StatisticalSummary:
     @classmethod
     def plot_confidence_ellipse(
-        cls, x: np.ndarray, a_arr: np.ndarray, b_arr: np.ndarray
+        cls, a_arr: np.ndarray, tau_arr: np.ndarray
     ) -> tuple[ndarray, float | Any]:
-        # The confidence region size is based on the standard deviation (n_std) from the cls.confidence_ellipse function
-        # Remember 2 std = 95% confidence interval
+        """
+        Plots a confidence ellipse of the two parameters from the exponential
+        fit given as: I(t) = a*exp(-t/tau), where I(t) is the beam intensity
+        at time t, a is the initial intensity and tau is the lifetime.
+
+        The confidence ellipse is based on the standard deviation (n_std) from
+        the cls.confidence_ellipse function. Remember 2 std is approximately
+        a 95% confidence interval.
+
+        :param x: np.ndarray. The x-axis values for the data.
+        :param a_arr: np.ndarray. The a values from the exponential fit.
+        :param tau_arr: np.ndarray. The tau values from the exponential fit.
+        """
+        x = np.arange(1000)
+
         fig, ax = plt.subplots()
         da = 0.1
         A, B = np.meshgrid(
             np.linspace(np.min(a_arr) * (1 - da), np.max(a_arr) * (1 + da), 50),
-            np.linspace(np.min(b_arr) * (1 - da), np.max(b_arr) * (1 + da), 50),
+            np.linspace(np.min(tau_arr) * (1 - da), np.max(tau_arr) * (1 + da), 50),
         )
-        y = np.mean(a_arr) * np.exp(-x / np.mean(b_arr))
+        y = np.mean(a_arr) * np.exp(-x / np.mean(tau_arr))
         r2 = np.sum((y - A[:, :, None] * np.exp(-x / B[:, :, None])) ** 2, axis=2)
         r2 = np.log(r2)
         ax.contourf(A, B, r2, alpha=0.5)
-        for a_, b_ in zip(a_arr, b_arr):
+        for a_, b_ in zip(a_arr, tau_arr):
             ax.scatter(a_, b_, c="b", marker="x")
         ax_patch, b_center, b_deviation = cls.confidence_ellipse(
-            a_arr, b_arr, ax, 2, edgecolor="b"
+            a_arr, tau_arr, ax, 2, edgecolor="b"
         )
         ax.hlines(
             b_center - b_deviation,
@@ -108,7 +121,7 @@ class StatisticalSummary:
 
         print(
             f"With 95.5% confidence b is in the interval: {b_center - b_deviation} to {b_center + b_deviation}."
-            + f"\nThis is based on {len(b_arr)} cycles of the experiment."
+            + f"\nThis is based on {len(tau_arr)} cycles of the experiment."
         )
 
         return b_center, b_deviation
@@ -119,11 +132,13 @@ class StatisticalSummary:
         x: np.ndarray,
         y: np.ndarray,
         ax: plt.Axes,
-        n_std: int = 3.0,
+        n_std: int = 2,
         facecolor: str = "none",
         **kwargs,
     ) -> tuple[matplotlib.patches.Ellipse, float, float]:
         """
+        Credit: https://matplotlib.org/stable/gallery/statistics/confidence_ellipse.html
+
         Create a plot of the covariance confidence ellipse of *x* and *y*.
         Parameters
         ----------

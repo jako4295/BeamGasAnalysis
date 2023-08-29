@@ -126,9 +126,8 @@ class Calculator(Tools, ElectronMethods):
                 )
 
         if return_lifetime_band:
-            x = np.arange(extraction_idx - injection_idx)
             tau_center, tau_deviation = StatisticalSummary.plot_confidence_ellipse(
-                x, a_arr, tau_arr
+                a_arr, tau_arr
             )
             tau_series["tau_lower"] = tau_center + tau_deviation
             tau_series["tau_upper"] = tau_center - tau_deviation

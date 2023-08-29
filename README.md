@@ -40,7 +40,16 @@ From the data we get multiple cycles of the same experiment for each bunch of pa
 
 ![Confidence ellipse for PS](Plots/confidence_ellipse.png)
 
-The gray bounds drawn on the figure above illustrates the upper and lower bounds for the lifetime parameter of the model, which is the one we are interested in. The confidence ellipse is created using two standard deviations, which is approximately equivalent to a 95% confidence interval. To compare this best and worst case lifetime estimate to the cross section estimates we plot the cross section estimates with the best and worst case lifetime estimates, together with semi-emperical formula for cross section that is descibed in [^1][^2][^3]. This is shown below (for PS).
+The gray bounds drawn on the figure above illustrates the upper and lower bounds for the lifetime parameter of the model, which is the one we are interested in. The confidence ellipse is created using two standard deviations, which is approximately equivalent to a 95% confidence interval. To use the function for creating this ellipse then we can from the `Executor.py` file run the following code,
+
+```python
+from LifetimeExecutor import StatisticalSummary
+
+StatisticalSummary.plot_confidence_ellipse(np.random.normal(7,0.5,500), np.random.normal(5,1,500))
+```
+This will create create an ellipse similar to the one above. The first parameter is the fit for the a parameter of the beam intensity formula, and the third parameter is the fit for the $\tau$ parameter of the beam intensity formula. Furthermore, this function is a wrapper function for the one described [here](https://matplotlib.org/stable/gallery/statistics/confidence_ellipse.html). The wrapper adds everything to the plot, except the ellipse. The heat map is based one the squared residuals to the average fitted parameters. To follow an example with a similar heat map, see [here](https://scipython.com/blog/least-squares-fitting-to-an-exponential-function/#comments).
+
+To compare this best and worst case lifetime estimate to the cross section estimates we plot the cross section estimates with the best and worst case lifetime estimates, together with semi-emperical formula for cross section that is descibed in [^1][^2][^3]. This is shown below (for PS).
 
 ![Cross section estimates with best and worst case lifetime estimates for PS](Plots/sigma_from_tau.png)
 
