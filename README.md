@@ -16,20 +16,33 @@ $$
 where $\tau = 1/b$ is the lifetime of the ion, and $a$ is a constant. By fitting this formula to the beam data, we can estimate the lifetime of the ion.
 
 ## Usage and Results
-All code is run from the file `Executor.py` found in the `LifetimeExecutor`, where different plots are made from the `Tests` class. The current methods implemented in the `Tests` class is explained below.
+All code is run from the file `Executor.py` found in the `LifetimeExecutor`, where different plots are made from the `Tests` class. The current methods implemented in the `Tests` class is explained below. For a description of the data used, see the section [Data](#data).
 
 ### `Tests.get_lifetimes_from_sigma_estimates()`
 This method calculates a lifetime for a given ring type (LEIR, PS, or SPS). The estimated cross sections are calculated using the methods referred to above [^1][^2][^3]. The lifetimes are calculated using the inversely proportional relation between lifetime and cross section. The plot that is obtained using this method is shown below (for PS).
 
+![Lifetime estimates for PS](Plots/Lifetime_ps.png)
 
 ### `Tests.get_sigma_estimates_with_varying_i_p()`
 This method calculates the cross section for a given ring type (LEIR, PS, or SPS). The cross sections are calculated using the methods referred to above [^1][^2][^3]. The cross sections are calculated for different ionization potentials $I_p$ to see the impact of this paremeter.
 
+![Cross section estimates with varying $I_p$ for PS](Plots/sigma_vary_ip_ps.png)
+
 ### `Tests.get_sigma_estimates_with_varying_n_0()`
 This method calculates the cross section for a given ring type (LEIR, PS, or SPS). The cross sections are calculated using the methods referred to above [^1][^2][^3]. The cross sections are calculated for different principle quantum numbers $n_0$ to see the impact of this paremeter.
 
+![Cross section estimates with varying $n_0$ for PS](Plots/sigma_vary_n0_ps.png)
+
 ### `Tests.get_lifetime_from_data()`
 This method gets an estimate of the lifetime based on the beam data from `DataObject().elements`. The lifetime is estimated by fitting the beam intensity formula to the beam data. This lifetime is then compared to the cross section estimates in the cross section domain. Note that when the lifetime is found from the cross section then from the inverse proportionality we have an $n$ for each residual gas in the beam pipe. Hence we have a cross section comparison for each residual gas.
+
+From the data we get multiple cycles of the same experiment for each bunch of particles we insert into the beam pipe. Hence, we get a parameter fit for each bunch. This is used to create a confidence ellipse for the parameters as shown below (for PS).
+
+![Confidence ellipse for PS](Plots/confidence_ellipse.png)
+
+The gray bounds drawn on the figure above illustrates the upper and lower bounds for the lifetime parameter of the model, which is the one we are interested in. The confidence ellipse is created using two standard deviations, which is approximately equivalent to a 95% confidence interval. To compare this best and worst case lifetime estimate to the cross section estimates we plot the cross section estimates with the best and worst case lifetime estimates, together with semi-emperical formula for cross section that is descibed in [^1][^2][^3]. This is shown below (for PS).
+
+![Cross section estimates with best and worst case lifetime estimates for PS](Plots/sigma_from_tau.png)
 
 ## Data
 The data used for processing is found in the `DataHandler`, and the data is stored in the `DataObject` class. This class contains the following: 
