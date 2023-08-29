@@ -84,18 +84,8 @@ class StatisticalSummary:
         :param a_arr: np.ndarray. The a values from the exponential fit.
         :param tau_arr: np.ndarray. The tau values from the exponential fit.
         """
-        x = np.arange(1000)
 
         fig, ax = plt.subplots()
-        da = 0.1
-        A, B = np.meshgrid(
-            np.linspace(np.min(a_arr) * (1 - da), np.max(a_arr) * (1 + da), 50),
-            np.linspace(np.min(tau_arr) * (1 - da), np.max(tau_arr) * (1 + da), 50),
-        )
-        y = np.mean(a_arr) * np.exp(-x / np.mean(tau_arr))
-        r2 = np.sum((y - A[:, :, None] * np.exp(-x / B[:, :, None])) ** 2, axis=2)
-        r2 = np.log(r2)
-        ax.contourf(A, B, r2, alpha=0.5)
         for a_, b_ in zip(a_arr, tau_arr):
             ax.scatter(a_, b_, c="b", marker="x")
         ax_patch, b_center, b_deviation = cls.confidence_ellipse(
@@ -103,15 +93,15 @@ class StatisticalSummary:
         )
         ax.hlines(
             b_center - b_deviation,
-            xmin=np.min(A[:, :, None]),
-            xmax=np.max(A[:, :, None]),
+            xmin=np.min(a_arr),
+            xmax=np.max(a_arr),
             color="gray",
             alpha=0.5,
         )
         ax.hlines(
             b_center + b_deviation,
-            xmin=np.min(A[:, :, None]),
-            xmax=np.max(A[:, :, None]),
+            xmin=np.min(a_arr),
+            xmax=np.max(a_arr),
             color="gray",
             alpha=0.5,
         )
