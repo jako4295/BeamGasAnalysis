@@ -15,7 +15,117 @@ $$
 
 where $\tau = 1/b$ is the lifetime of the ion, and $a$ is a constant. By fitting this formula to the beam data, we can estimate the lifetime of the ion.
 
-## Usage and Results
+## Data <a name="data"></a>
+The data used for processing is found in the `DataHandler`, and the data is stored in the `DataObject` class. This class contains the following: 
+- `gas_fractions`, which is percentage of the different gases in the beam pipe (also referred to as residual gasses). 
+- `pressure_data`, which is the pressure in the beam pipe. It is assumed that the pressure is constant in the beam pipe.
+- `projectile_data`, which constists of the atomic number $Z$, the charge $q$, the kinetic energy $E_{kin}$, the first ionization potential of the projectile $I_p$, the principle quantum number of the outermost projectile electron $n_0$, and the relativistic beta $\beta$. The projectile is the term used for the ion beam.
+  - $I_p$ is found using the [NIST database](https://physics.nist.gov/PhysRefData/ASD/ionEnergy.html) and converting the value for ionization energy to keV.
+  - $n_0$ is found by sorting the electron configuration in ascending order according to the energy level of the atom in question. The energy level order can be found [here](https://chem.libretexts.org/Bookshelves/General_Chemistry/Map%3A_A_Molecular_Approach_(Tro)/08%3A_Periodic_Properties_of_the_Elements/8.03%3A_Electron_Configurations-_How_Electrons_Occupy_Orbitals) in Figure 8.3.1. Starting from the highest energies then we remove from the superscript. For instance the electron configuration for oxygen is $1s^2 2s^2 2p^4 \ \Rightarrow \ 1s^2 2s^2$, which gives $n_0=2$ (because this is the energy level $2s$). 
+- `elements`, which is the beam data and is used to find the lifetime of an ion through fitting of the exponential function given above.
+### Data Import
+To initiate the `DataObject` there are a few options, as showed in code below:
+
+*Initiate from file path*
+```python
+from DataHandler import DataObject
+
+ring_type = "PS"
+path = "DataHandler/"
+data = DataObject(
+    ring_type=ring_type,
+    gas_fraction=path + "Gas_fractions.csv",
+    pressure=path + "Pressure_data.csv",
+    projectile=path + "Projectile_data.csv",
+)
+```
+*Initiate from pandas series*
+```python
+from DataHandler import DataObject
+
+ring_type = "PS"
+gas_fraction = pd.read_csv("DataHandler/Gas_fractions.csv", index_col=0, squeeze=True)
+pressure = pd.read_csv("DataHandler/Pressure_data.csv", index_col=0, squeeze=True)
+projectile = pd.read_csv("DataHandler/Projectile_data.csv", index_col=0, squeeze=True)
+data = DataObject(
+    ring_type=ring_type,
+    gas_fraction=gas_fraction,
+    pressure=pressure,
+    projectile=projectile,
+)
+```
+If it is desired to run tests with data from the beams then we can use the `get_data` attribute or initialize the `DataObject` with the `beam_data` parameter set to the path to the data. Here are the two options showed in code:
+
+*Initiate using attribute*
+```python
+from DataHandler import DataObject
+
+ring_type = "PS"
+path = "DataHandler/"
+data = DataObject(
+    ring_type=ring_type,
+    gas_fraction=path + "Gas_fractions.csv",
+    pressure=path + "Pressure_data.csv",
+    projectile=path + "Projectile_data.csv",
+)
+data_path = path + "BeamDataHandler/"
+data.get_data(data_path)
+```
+*Initiate using parameter*
+```python
+from DataHandler import DataObject
+
+ring_type = "PS"
+path = "DataHandler/"
+data = DataObject(
+    ring_type=ring_type,
+    gas_fraction=path + "Gas_fractions.csv",
+    pressure=path + "Pressure_data.csv",
+    projectile=path + "Projectile_data.csv",
+    beam_data=path + "BeamDataHandler/"
+)
+```
+
+
+## Usage 
+The different methods that has been developed for this project is found in the `Calculator` class. The methods are described below.
+
+We can calculate the cross section as follows (note that the `data` is the `DataObject` described above):
+
+```python
+from Calculator import Calculator
+
+calculator_object = Calculator(data)
+sigma_el, sigma_ec = calculator_object.get_all_molecular_sigmas()
+```
+We can calculate the lifetime as follows (note that the `data` is the `DataObject` described above):
+
+```python
+from Calculator import Calculator
+
+calculator_object = Calculator(data)
+tau = calculator_object.calculate_full_lifetime()
+```
+If we have loaded the data to the `DataObject` (see [Data](#data)) then we can calculate the lifetime from the beam data as follows:
+
+```python
+from Calculator import Calculator
+
+calculator_object = Calculator(data)
+tau = calculator_object.get_lifetime_from_data(
+    injection_idx=270,
+    extraction_idx=1500,
+)
+```
+The `injection_idx` and `extraction_idx` are the indices of the beam data where the injection and extraction of the beam starts, respectively. This is based on the fitting of the beam intensity formula to the beam data. The indices are found by looking at the plot of the beam data and finding the indices where the injection and extraction starts. 
+
+From the lifetime we can obtain the cross section. Note this cross section is the combined cross section for electron loss and electron capture. This is done as follows:
+
+```python
+sigma_from_tau = calculator_object.get_sigma_from_lifetime(tau)
+```
+
+## Results
 All code is run from the file `Executor.py` found in the `LifetimeExecutor`, where different plots are made from the `Tests` class. The current methods implemented in the `Tests` class is explained below. For a description of the data used, see the section [Data](#data).
 
 ### `Tests.get_lifetimes_from_sigma_estimates()`
@@ -52,15 +162,6 @@ This will create create an ellipse similar to the one above. The first parameter
 To compare this best and worst case lifetime estimate to the cross section estimates we plot the cross section estimates with the best and worst case lifetime estimates, together with semi-emperical formula for cross section that is descibed in [^1][^2][^3]. This is shown below (for PS).
 
 ![Cross section estimates with best and worst case lifetime estimates for PS](Plots/sigma_from_tau.png)
-
-## Data
-The data used for processing is found in the `DataHandler`, and the data is stored in the `DataObject` class. This class contains the following: 
-- `gas_fractions`, which is percentage of the different gases in the beam pipe (also referred to as residual gasses). 
-- `pressure_data`, which is the pressure in the beam pipe. It is assumed that the pressure is constant in the beam pipe.
-- `projectile_data`, which constists of the atomic number $Z$, the charge $q$, the kinetic energy $E_{kin}$, the first ionization potential of the projectile $I_p$, the principle quantum number of the outermost projectile electron $n_0$, and the relativistic beta $\beta$. The projectile is the term used for the ion beam.
-  - $I_p$ is found using the [NIST database](https://physics.nist.gov/PhysRefData/ASD/ionEnergy.html) and converting the value for ionization energy to keV.
-  - $n_0$ is found by sorting the electron configuration in ascending order according to the energy level of the atom in question. The energy level order can be found [here](https://chem.libretexts.org/Bookshelves/General_Chemistry/Map%3A_A_Molecular_Approach_(Tro)/08%3A_Periodic_Properties_of_the_Elements/8.03%3A_Electron_Configurations-_How_Electrons_Occupy_Orbitals) in Figure 8.3.1. Starting from the highest energies then we remove from the superscript. For instance the electron configuration for oxygen is $1s^2 2s^2 2p^4 \ \Rightarrow \ 1s^2 2s^2$, which gives $n_0=2$ (because this is the energy level $2s$). 
-- `elements`, which is the beam data and is used to find the lifetime of an ion through fitting of the exponential function given above.
 
 [^1]: [DuBois et al. Electron capture cross section](https://journals.aps.org/pra/abstract/10.1103/PhysRevA.84.022702)
 [^2]: [Shevelko et al. Electron loss cross section](https://www.sciencedirect.com/science/article/pii/S0168583X11003272)
