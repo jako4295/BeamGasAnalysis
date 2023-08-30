@@ -15,6 +15,12 @@ $$
 
 where $\tau = 1/b$ is the lifetime of the ion, and $a$ is a constant. By fitting this formula to the beam data, we can estimate the lifetime of the ion.
 
+## Table of Contents
+1. [Data](#data)
+    1. [Data Import](#dataimport)
+2. [Usage](#usage)
+3. [Results](#results)
+
 ## Data <a name="data"></a>
 The data used for processing is found in the `DataHandler`, and the data is stored in the `DataObject` class. This class contains the following: 
 - `gas_fractions`, which is percentage of the different gases in the beam pipe (also referred to as residual gasses). 
@@ -23,7 +29,7 @@ The data used for processing is found in the `DataHandler`, and the data is stor
   - $I_p$ is found using the [NIST database](https://physics.nist.gov/PhysRefData/ASD/ionEnergy.html) and converting the value for ionization energy to keV.
   - $n_0$ is found by sorting the electron configuration in ascending order according to the energy level of the atom in question. The energy level order can be found [here](https://chem.libretexts.org/Bookshelves/General_Chemistry/Map%3A_A_Molecular_Approach_(Tro)/08%3A_Periodic_Properties_of_the_Elements/8.03%3A_Electron_Configurations-_How_Electrons_Occupy_Orbitals) in Figure 8.3.1. Starting from the highest energies then we remove from the superscript. For instance the electron configuration for oxygen is $1s^2 2s^2 2p^4 \ \Rightarrow \ 1s^2 2s^2$, which gives $n_0=2$ (because this is the energy level $2s$). 
 - `elements`, which is the beam data and is used to find the lifetime of an ion through fitting of the exponential function given above.
-### Data Import
+### Data Import <a name="dataimport"></a>
 To initiate the `DataObject` there are a few options, as showed in code below:
 
 *Initiate from file path*
@@ -87,7 +93,7 @@ data = DataObject(
 ```
 
 
-## Usage 
+## Usage <a name="usage"></a>
 The different methods that has been developed for this project is found in the `Calculator` class. The methods are described below.
 
 We can calculate the cross section as follows (note that the `data` is the `DataObject` described above):
@@ -125,7 +131,7 @@ From the lifetime we can obtain the cross section. Note this cross section is th
 sigma_from_tau = calculator_object.get_sigma_from_lifetime(tau)
 ```
 
-## Results
+## Results <a name="results"></a>
 All code is run from the file `Executor.py` found in the `LifetimeExecutor`, where different plots are made from the `Tests` class. The current methods implemented in the `Tests` class is explained below. For a description of the data used, see the section [Data](#data).
 
 ### `Tests.get_lifetimes_from_sigma_estimates()`
