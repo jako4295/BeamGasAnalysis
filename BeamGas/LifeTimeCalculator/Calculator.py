@@ -4,7 +4,7 @@ from scipy.optimize import curve_fit
 from scipy import constants
 from typing import Union
 
-from DataHandler import DataObject
+from BeamGas.DataHandler import DataObject
 from .ElectronMethods import ElectronMethods, ElectronEnum
 from .Tools import Tools
 from .ResidualGasConstantType import ResidualGasConstantType as res_gas

@@ -1,4 +1,4 @@
-from TestSetups import Tests
+from .TestSetups import Tests
 
 
 def main():

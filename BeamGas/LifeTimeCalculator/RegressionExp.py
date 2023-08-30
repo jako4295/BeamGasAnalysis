@@ -8,7 +8,7 @@ from numpy import ndarray
 from scipy.optimize import newton
 from scipy import stats
 
-from DataHandler import DataObject
+from BeamGas.DataHandler import DataObject
 
 
 class ExpRegression:

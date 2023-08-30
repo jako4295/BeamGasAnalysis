@@ -3,15 +3,15 @@ import pandas as pd
 from matplotlib import pyplot as plt
 from scipy import constants
 
-from DataHandler import DataObject
-from LifeTimeCalculator import Calculator
+from .DataHandler import DataObject
+from .LifeTimeCalculator import Calculator
 
 
 class Tests:
     @staticmethod
     def get_lifetimes_from_sigma_estimates() -> None:
         ring_type = "PS"
-        path = "DataHandler/"
+        path = "BeamGas/DataHandler/"
         data = DataObject(
             ring_type=ring_type,
             gas_fraction=path + "Gas_fractions.csv",
@@ -44,7 +44,7 @@ class Tests:
         """
         ring_type = "PS"
         projectile = "O4"
-        path = "DataHandler/"
+        path = "BeamGas/DataHandler/"
 
         sig_el_list = {}
         sig_ec_list = {}
@@ -86,7 +86,7 @@ class Tests:
     def get_sigma_estimates_with_varying_n_0() -> None:
         ring_type = "PS"
         projectile = "O4"
-        path = "DataHandler/"
+        path = "BeamGas/DataHandler/"
 
         sig_el_list = {}
         sig_ec_list = {}
@@ -132,7 +132,7 @@ class Tests:
 
         # PS ring argument should not be changed as it matches the data.
         ring_type = "PS"
-        path = "DataHandler/"
+        path = "BeamGas/DataHandler/"
         data = DataObject(
             ring_type=ring_type,
             gas_fraction=path + "Gas_fractions.csv",
