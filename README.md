@@ -16,7 +16,7 @@ $$
 where $\tau = 1/b$ is the lifetime of the ion, and $a$ is a constant. By fitting this formula to the beam data, we can estimate the lifetime of the ion.
 
 ## Table of Contents
-1. [Installation](#installation)] 
+1. [Installation](#installation)
 2. [Data](#data)
     1. [Data Import](#dataimport)
 3. [Usage](#usage)
@@ -27,7 +27,7 @@ The package can be installed in editable mode by running the following command i
 
 ```bash
 git clone https://github.com/jako4295/BeamGasAnalysis.git
-pip install .
+pip install -e .
 ```
 
 ## Data <a name="data"></a>
