@@ -2,8 +2,6 @@ import numpy as np
 import pandas as pd
 from scipy import constants
 
-from DataHandler import DataObject
-
 
 class Tools:
     @staticmethod

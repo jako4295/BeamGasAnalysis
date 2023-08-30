@@ -12,13 +12,6 @@ from .RegressionExp import ExpRegression, StatisticalSummary
 
 
 class Calculator(Tools, ElectronMethods):
-    # TODO: Add method for calculating sigmas based on the lifetime.
-    #
-    # TODO: Also add method for getting the lifetime based on data from the ring (which can the use the aforementioned
-    #       method)
-    #       - Perhaps this method will be good for fitting the data to a lifetime (first fit, then calculate when the
-    #       curve is zero):
-    #          https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.curve_fit.html
     beta: float = None
     Z_p: float = None
     q: float = None
