@@ -11,7 +11,13 @@ class Tests:
     @staticmethod
     def get_lifetimes_from_sigma_estimates() -> None:
         ring_type = "PS"
-        data = DataObject(ring_type=ring_type)
+        path = "DataHandler/"
+        data = DataObject(
+            ring_type=ring_type,
+            gas_fraction=path + "Gas_fractions.csv",
+            pressure=path + "Pressure_data.csv",
+            projectile=path + "Projectile_data.csv",
+        )
         ps_object = Calculator(data)
         tau = ps_object.calculate_full_lifetime()
 
@@ -38,13 +44,19 @@ class Tests:
         """
         ring_type = "PS"
         projectile = "O4"
+        path = "DataHandler/"
 
         sig_el_list = {}
         sig_ec_list = {}
         # I_p_list = [0.01361806, 13.61806, 13.67]  # corresponds to [website KeV, website eV, our data]
         I_p_list = np.linspace(0.01, 20, 50)
         for I_p in I_p_list:
-            data = DataObject(ring_type=ring_type)
+            data = DataObject(
+                ring_type=ring_type,
+                gas_fraction=path + "Gas_fractions.csv",
+                pressure=path + "Pressure_data.csv",
+                projectile=path + "Projectile_data.csv",
+            )
             ps_object = Calculator(data)
             ps_object.I_p = I_p
             sigma_el, sigma_ec = ps_object.get_all_molecular_sigmas()
@@ -74,6 +86,7 @@ class Tests:
     def get_sigma_estimates_with_varying_n_0() -> None:
         ring_type = "PS"
         projectile = "O4"
+        path = "DataHandler/"
 
         sig_el_list = {}
         sig_ec_list = {}
@@ -81,7 +94,12 @@ class Tests:
             1, 11
         )  # corresponds to [website KeV, website eV, our data]
         for n_0 in n_0_list:
-            data = DataObject(ring_type=ring_type)
+            data = DataObject(
+                ring_type=ring_type,
+                gas_fraction=path + "Gas_fractions.csv",
+                pressure=path + "Pressure_data.csv",
+                projectile=path + "Projectile_data.csv",
+            )
             ps_object = Calculator(data)
             ps_object.n_0 = n_0
             sigma_el, sigma_ec = ps_object.get_all_molecular_sigmas()
@@ -114,7 +132,16 @@ class Tests:
 
         # PS ring argument should not be changed as it matches the data.
         ring_type = "PS"
-        data = DataObject(ring_type=ring_type)
+        path = "DataHandler/"
+        data = DataObject(
+            ring_type=ring_type,
+            gas_fraction=path + "Gas_fractions.csv",
+            pressure=path + "Pressure_data.csv",
+            projectile=path + "Projectile_data.csv",
+        )
+        data_path = path + "BeamDataHandler/"
+        data.get_data(data_path)
+
         ps_object = Calculator(data)
         tau = ps_object.get_lifetime_from_data(
             injection_idx=270,

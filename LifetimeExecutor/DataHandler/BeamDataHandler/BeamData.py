@@ -7,7 +7,9 @@ class BeamData:
     elements = None
 
     def __init__(self):
-        path = "DataHandler/BeamDataHandler/"
+        pass
+
+    def get_data(self, path: str) -> None:
         self.elements = pd.read_csv(path + "df_elements1-long.csv", index_col=0)
         self.df_info = pd.read_csv(path + "df_info1-long.csv", index_col=0)
 
