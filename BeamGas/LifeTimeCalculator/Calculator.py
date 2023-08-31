@@ -108,7 +108,6 @@ class Calculator(Tools, ElectronMethods):
             test_element = self.data.elements[col][injection_idx:extraction_idx]
             xdata = np.array(np.arange(len(test_element)), dtype=float)
             ydata = np.array(test_element.values, dtype=float).reshape(-1)
-            ydata_smooth = pd.Series(ydata).rolling(10, win_type="triang").mean().values
 
             fun = lambda x_variable, a, b: a * np.exp(-x_variable / b)
 
