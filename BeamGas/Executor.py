@@ -1,11 +1,11 @@
-from .TestSetups import Tests
+from .Plots import Plots
 
 
 def main():
-    Tests.get_lifetimes_from_sigma_estimates()
-    Tests.get_sigma_estimates_with_varying_i_p()
-    Tests.get_sigma_estimates_with_varying_n_0()
-    Tests.get_lifetime_from_data()
+    Plots.get_lifetimes_from_sigma_estimates()
+    Plots.get_sigma_estimates_with_varying_i_p()
+    Plots.get_sigma_estimates_with_varying_n_0()
+    Plots.get_lifetime_from_data()
 
 
 if __name__ == "__main__":

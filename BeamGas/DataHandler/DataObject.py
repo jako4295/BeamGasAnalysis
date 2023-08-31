@@ -52,4 +52,4 @@ class DataObject(BeamData):
         ][self.projectile_data.loc[:, ("I_p", "n_0")] != 0]
         self.projectile_data = self.projectile_data.dropna()
         self.gas_fractions = self.gas_fractions[ring_type]
-        self.pressure_data = self.pressure_data[ring_type][0]
+        self.pressure_data = self.pressure_data[ring_type].iloc[0]

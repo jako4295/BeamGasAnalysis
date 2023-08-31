@@ -7,11 +7,11 @@ from .DataHandler import DataObject
 from .LifeTimeCalculator import Calculator
 
 
-class Tests:
+class Plots:
     @staticmethod
-    def get_lifetimes_from_sigma_estimates() -> None:
-        ring_type = "PS"
-        path = "BeamGas/DataHandler/"
+    def get_lifetimes_from_sigma_estimates(
+        path: str = "BeamGas/DataHandler/", ring_type: str = "PS"
+    ) -> None:
         data = DataObject(
             ring_type=ring_type,
             gas_fraction=path + "Gas_fractions.csv",
@@ -31,7 +31,11 @@ class Tests:
         fig.show()
 
     @staticmethod
-    def get_sigma_estimates_with_varying_i_p() -> None:
+    def get_sigma_estimates_with_varying_i_p(
+        path: str = "BeamGas/DataHandler/",
+        projectile: str = "O4",
+        ring_type: str = "PS",
+    ) -> None:
         """
         This method will only vary one projectile parameter and plot the resulting sigma estimates for different I_p.
 
@@ -42,10 +46,6 @@ class Tests:
 
             It may be in wrong units and I_p for Pb54 in our data is not equal to the one on the website.
         """
-        ring_type = "PS"
-        projectile = "O4"
-        path = "BeamGas/DataHandler/"
-
         sig_el_list = {}
         sig_ec_list = {}
         # I_p_list = [0.01361806, 13.61806, 13.67]  # corresponds to [website KeV, website eV, our data]
@@ -83,11 +83,11 @@ class Tests:
         fig.show()
 
     @staticmethod
-    def get_sigma_estimates_with_varying_n_0() -> None:
-        ring_type = "PS"
-        projectile = "O4"
-        path = "BeamGas/DataHandler/"
-
+    def get_sigma_estimates_with_varying_n_0(
+        path: str = "BeamGas/DataHandler/",
+        projectile: str = "O4",
+        ring_type: str = "PS",
+    ) -> None:
         sig_el_list = {}
         sig_ec_list = {}
         n_0_list = np.arange(
@@ -126,24 +126,34 @@ class Tests:
         fig.show()
 
     @staticmethod
-    def get_lifetime_from_data() -> None:
+    def get_lifetime_from_data(
+        path: str = "BeamGas/DataHandler/",
+        data_path: str = "BeamDataHandler/",
+        date: str = "2022-11-18 0815-2350",
+        ring_type: str = "PS",
+    ) -> None:
+        """
+
+        :param path: Path to the data. The data has to be in a subfolder of the 'path' argument.
+        :param data_path: Path to the data. The data has to be in a subfolder of the 'path' argument.
+        :param date: Format is "YYYY-MM-DD HHMM-HHMM". Any split character is allowed (also no split characters).
+        :param ring_type: Should match the ring type of the data.
+        """
         # Todo: Maybe setup test such that sigma is calculated for all tau values found from the data and give a
         #  confidence measure for the sigma estimate based on the different cycles.
-
-        # PS ring argument should not be changed as it matches the data.
-        ring_type = "PS"
-        path = "BeamGas/DataHandler/"
         data = DataObject(
             ring_type=ring_type,
             gas_fraction=path + "Gas_fractions.csv",
             pressure=path + "Pressure_data.csv",
             projectile=path + "Projectile_data.csv",
         )
-        data_path = path + "BeamDataHandler/"
-        data.get_data(data_path, "2022-11-18 0815-2350")
+        data_path = path + data_path
+        data.get_data(data_path, date)
 
         ps_object = Calculator(data)
-        tau = ps_object.get_lifetime_from_data()
+        tau = ps_object.get_lifetime_from_data(
+            injection_idx=100,
+        )
         #     injection_idx=270,
         #     extraction_idx=1500,
         # )
