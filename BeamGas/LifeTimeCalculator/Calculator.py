@@ -90,11 +90,15 @@ class Calculator(Tools, ElectronMethods):
 
     def get_lifetime_from_data(
         self,
-        injection_idx: int,
-        extraction_idx: int,
+        injection_idx: int = None,
+        extraction_idx: int = None,
         fitting_statistics=True,
         return_lifetime_band=True,
     ) -> pd.Series:
+        if injection_idx is None:
+            injection_idx = 0
+        if extraction_idx is None:
+            extraction_idx = len(self.data.elements) + 1
         tau_series = pd.Series(dtype=float)
         a_arr = np.zeros(len(self.data.elements.columns))
         tau_arr = np.zeros(len(self.data.elements.columns))

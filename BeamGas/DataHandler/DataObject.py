@@ -11,7 +11,6 @@ class DataObject(BeamData):
         gas_fraction: Union[str, pd.DataFrame],
         pressure: Union[str, pd.DataFrame],
         projectile: Union[str, pd.DataFrame],
-        beam_data: str = None,
     ):
         """
         :param ring_type: str, either 'LEIR', 'PS', or 'SPS'
@@ -38,9 +37,6 @@ class DataObject(BeamData):
         self.pressure_data = self.pressure_data.T
 
         self.get_ring_sorted_data(ring_type)
-
-        if beam_data:
-            self.get_data(beam_data)
 
     def get_ring_sorted_data(self, ring_type: str) -> None:
         col_names_ = ["Z", "I_p", "n_0"]

@@ -69,9 +69,8 @@ data = DataObject(
     projectile=projectile,
 )
 ```
-If it is desired to run tests with data from the beams then we can use the `get_data` attribute or initialize the `DataObject` with the `beam_data` parameter set to the path to the data. Here are the two options showed in code:
+If it is desired to run tests with data from the beams then we can use the `get_data` attribute on the `DataObject`. Here is an example in code:
 
-*Initiate using attribute*
 ```python
 from DataHandler import DataObject
 
@@ -84,23 +83,9 @@ data = DataObject(
     projectile=path + "Projectile_data.csv",
 )
 data_path = path + "BeamDataHandler/"
-data.get_data(data_path)
+data.get_data(data_path, "2022-11-18 11:00-11:20")
 ```
-*Initiate using parameter*
-```python
-from DataHandler import DataObject
-
-ring_type = "PS"
-path = "DataHandler/"
-data = DataObject(
-    ring_type=ring_type,
-    gas_fraction=path + "Gas_fractions.csv",
-    pressure=path + "Pressure_data.csv",
-    projectile=path + "Projectile_data.csv",
-    beam_data=path + "BeamDataHandler/"
-)
-```
-
+Note that the date argument can be seperated using any symbol, but it needs to have the same numbers as the file.
 
 ## Usage <a name="usage"></a>
 The different methods that has been developed for this project is found in the `Calculator` class. The methods are described below.
@@ -132,7 +117,7 @@ tau = calculator_object.get_lifetime_from_data(
     extraction_idx=1500,
 )
 ```
-The `injection_idx` and `extraction_idx` are the indices of the beam data where the injection and extraction of the beam starts, respectively. This is based on the fitting of the beam intensity formula to the beam data. The indices are found by looking at the plot of the beam data and finding the indices where the injection and extraction starts. 
+The `injection_idx` and `extraction_idx` are the indices of the beam data where the injection and extraction of the beam starts, respectively. This is based on the fitting of the beam intensity formula to the beam data. The indices are found by looking at the plot of the beam data and finding the indices where the injection and extraction starts. If they are not specified then it is assumed that the injection and extraction starts at the first and last index, respectively.
 
 From the lifetime we can obtain the cross section. Note this cross section is the combined cross section for electron loss and electron capture. This is done as follows:
 

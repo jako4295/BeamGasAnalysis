@@ -140,13 +140,13 @@ class Tests:
             projectile=path + "Projectile_data.csv",
         )
         data_path = path + "BeamDataHandler/"
-        data.get_data(data_path)
+        data.get_data(data_path, "2022-11-18 0815-2350")
 
         ps_object = Calculator(data)
-        tau = ps_object.get_lifetime_from_data(
-            injection_idx=270,
-            extraction_idx=1500,
-        )
+        tau = ps_object.get_lifetime_from_data()
+        #     injection_idx=270,
+        #     extraction_idx=1500,
+        # )
 
         # from lifetime to cross-section:
         sigma_from_tau = ps_object.get_sigma_from_lifetime(tau)
