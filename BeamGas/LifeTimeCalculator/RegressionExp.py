@@ -5,6 +5,7 @@ import numpy as np
 from matplotlib import transforms, pyplot as plt
 from matplotlib.patches import Ellipse
 from numpy import ndarray
+import pandas as pd
 from scipy.optimize import newton
 from scipy import stats
 
@@ -77,7 +78,7 @@ class StatisticalSummary:
         at time t, a is the initial intensity and tau is the lifetime.
 
         The confidence ellipse is based on the standard deviation (n_std) from
-        the cls.confidence_ellipse function. Remember 2 std is approximately
+        the cls._confidence_ellipse function. Remember 2 std is approximately
         a 95% confidence interval.
 
         :param x: np.ndarray. The x-axis values for the data.
@@ -88,7 +89,7 @@ class StatisticalSummary:
         fig, ax = plt.subplots()
         for a_, b_ in zip(a_arr, tau_arr):
             ax.scatter(a_, b_, c="b", marker="x")
-        ax_patch, b_center, b_deviation = cls.confidence_ellipse(
+        ax_patch, b_center, b_deviation = cls._confidence_ellipse(
             a_arr, tau_arr, ax, 2, edgecolor="b"
         )
         ax.hlines(
@@ -117,7 +118,7 @@ class StatisticalSummary:
         return b_center, b_deviation
 
     @classmethod
-    def confidence_ellipse(
+    def _confidence_ellipse(
         cls,
         x: np.ndarray,
         y: np.ndarray,
@@ -185,7 +186,7 @@ class StatisticalSummary:
         ydata: np.ndarray,
         data: DataObject,
         idx: int,
-    ) -> None:
+    ) -> tuple[float, float]:
         fun_optimal = lambda x_variable: fun(x_variable, *optimal_params)
 
         y_estimate = fun_optimal(xdata)
@@ -199,23 +200,56 @@ class StatisticalSummary:
         t_quantile_a = stats.t(len(xdata) - 2).ppf(0.95)
         a_pm = t_quantile_a * SE_a
 
-        SE_b = np.sqrt(((ss_res / (len(xdata) - 2)) * pcov[1, 1]))
-        t_quantile_b = stats.t(len(xdata) - 2).ppf(0.95)
-        b_pm = t_quantile_b * SE_b
+        SE_tau = np.sqrt(((ss_res / (len(xdata) - 2)) * pcov[1, 1]))
+        t_quantile_tau = stats.t(len(xdata) - 2).ppf(0.95)
+        tau_pm = t_quantile_tau * SE_tau
 
         print("#" * 47 + "\nColumn nr: " + str(idx) + "\n" + "#" * 47)
         print(
             f"a is estimated to: {optimal_params[0]:.2e} +- {a_pm:.2e}\nb is"
-            + f" estimated to: {optimal_params[1]:.2e} +- {b_pm:.2e} \nR^2={r_squared:.5f}\nLifetime is "
+            + f" estimated to: {optimal_params[1]:.2e} +- {tau_pm:.2e} \nR^2={r_squared:.5f}\nLifetime is "
             + " " * 10
             + f"{optimal_params[1]*data.sample_frequency[idx]} \nLifetime upper bound: "
-            + f"{(optimal_params[1] - b_pm)*data.sample_frequency[idx]} \nLifetime lower bound: "
-            + f"{(optimal_params[1] + b_pm)*data.sample_frequency[idx]}\n"
+            + f"{(optimal_params[1] - tau_pm)*data.sample_frequency[idx]} \nLifetime lower bound: "
+            + f"{(optimal_params[1] + tau_pm)*data.sample_frequency[idx]}\n"
         )
 
-        # plt.plot(xdata, ydata, ".")
-        # plt.plot(xdata, y_estimate)
-        # lifetime_sec = ((1/optimal_params[1])*data.sample_frequency[idx]).total_seconds()
-        # plt.title(f"{idx} - $R^2$: {r_squared:.3f} - lifetime: {lifetime_sec:.3f} s")
-        #
-        # plt.show()
+        return a_pm, tau_pm
+
+    @staticmethod
+    def plot_exponential_regression_summary(
+        a: np.ndarray, tau: np.ndarray, a_pm, tau_pm, elements: pd.Series
+    ):
+        x_axis = np.arange(len(elements))
+        fits_upper = np.array(
+            list(
+                map(
+                    lambda a_, tau_: a_ * np.exp(-x_axis / tau_),
+                    list(a + a_pm),
+                    list(tau + tau_pm),
+                )
+            )
+        )
+        fits_lower = np.array(
+            list(
+                map(
+                    lambda a_, tau_: a_ * np.exp(-x_axis / tau_),
+                    list(a - a_pm),
+                    list(tau - tau_pm),
+                )
+            )
+        )
+        fits = np.array(
+            list(map(lambda a_, tau_: a_ * np.exp(-x_axis / tau_), list(a), list(tau)))
+        )
+        fig, ax = plt.subplots()
+        elements.plot(
+            ax=ax, style=".", markersize=0.5, alpha=0.15, color="red", legend=False
+        )
+        for fit_l, fit_u, fit in zip(fits_lower, fits_upper, fits):
+            ax.plot(x_axis, fit_l, color="gray", alpha=0.05)
+            ax.plot(x_axis, fit_u, color="gray", alpha=0.05)
+            ax.plot(x_axis, fit, color="k", alpha=0.05)
+        ax.set_xlabel("Time [ms]")
+        ax.set_ylabel("Intensity (x 1e10 charges)")
+        fig.show()

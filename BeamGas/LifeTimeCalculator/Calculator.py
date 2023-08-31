@@ -102,10 +102,13 @@ class Calculator(Tools, ElectronMethods):
         tau_series = pd.Series(dtype=float)
         a_arr = np.zeros(len(self.data.elements.columns))
         tau_arr = np.zeros(len(self.data.elements.columns))
+        a_pm_arr = np.zeros(len(self.data.elements.columns))
+        tau_pm_arr = np.zeros(len(self.data.elements.columns))
         for i, col in enumerate(self.data.elements.columns):
             test_element = self.data.elements[col][injection_idx:extraction_idx]
             xdata = np.array(np.arange(len(test_element)), dtype=float)
             ydata = np.array(test_element.values, dtype=float).reshape(-1)
+            ydata_smooth = pd.Series(ydata).rolling(10, win_type="triang").mean().values
 
             fun = lambda x_variable, a, b: a * np.exp(-x_variable / b)
 
@@ -118,13 +121,23 @@ class Calculator(Tools, ElectronMethods):
 
             a_arr[i], tau_arr[i] = optimal_params
             if fitting_statistics:
-                StatisticalSummary.get_lifetime_fit_statistics(
+                a_pm, tau_pm = StatisticalSummary.get_lifetime_fit_statistics(
                     fun, optimal_params, pcov, xdata, ydata, self.data, i
                 )
+                a_pm_arr[i], tau_pm_arr[i] = a_pm, tau_pm
 
         if return_lifetime_band:
             tau_center, tau_deviation = StatisticalSummary.plot_confidence_ellipse(
                 a_arr, tau_arr
+            )
+            StatisticalSummary.plot_exponential_regression_summary(
+                a_arr,
+                tau_arr,
+                a_pm_arr,
+                tau_pm_arr,
+                self.data.elements.iloc[injection_idx:extraction_idx].reset_index(
+                    drop=True
+                ),
             )
             tau_series["tau_lower"] = tau_center + tau_deviation
             tau_series["tau_upper"] = tau_center - tau_deviation
