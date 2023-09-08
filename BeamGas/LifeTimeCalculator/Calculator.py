@@ -94,12 +94,14 @@ class Calculator(Tools, ElectronMethods):
         extraction_idx: int = None,
         fitting_statistics=True,
         return_lifetime_band=True,
+        return_intensity_constant=False,
     ) -> pd.Series:
         if injection_idx is None:
             injection_idx = 0
         if extraction_idx is None:
             extraction_idx = len(self.data.elements) + 1
         tau_series = pd.Series(dtype=float)
+        a_series = pd.Series(dtype=float)
         a_arr = np.zeros(len(self.data.elements.columns))
         tau_arr = np.zeros(len(self.data.elements.columns))
         a_pm_arr = np.zeros(len(self.data.elements.columns))
@@ -114,9 +116,9 @@ class Calculator(Tools, ElectronMethods):
             optimal_params, pcov = curve_fit(fun, xdata, ydata, maxfev=2000)
             # optimal_params = ExpRegression(xdata, ydata).optimal_parameters
 
-            # tau = 1 / optimal_params[1]
             tau = optimal_params[1]
             tau_series[col] = tau
+            a_series[col] = optimal_params[0]
 
             a_arr[i], tau_arr[i] = optimal_params
             if fitting_statistics:
@@ -141,7 +143,10 @@ class Calculator(Tools, ElectronMethods):
             tau_series["tau_lower"] = tau_center + tau_deviation
             tau_series["tau_upper"] = tau_center - tau_deviation
 
-        return tau_series
+        if return_intensity_constant:
+            return tau_series, a_series
+        else:
+            return tau_series
 
     def get_sigma_from_lifetime(
         self, tau: pd.Series, projectile: str = "Pb54"
