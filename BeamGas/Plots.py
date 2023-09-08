@@ -151,9 +151,7 @@ class Plots:
         data.get_data(data_path, date)
 
         ps_object = Calculator(data)
-        tau = ps_object.get_lifetime_from_data(
-            injection_idx=100,
-        )
+        tau = ps_object.get_lifetime_from_data()
         #     injection_idx=270,
         #     extraction_idx=1500,
         # )
