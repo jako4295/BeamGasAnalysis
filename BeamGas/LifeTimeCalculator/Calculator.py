@@ -107,7 +107,7 @@ class Calculator(Tools, ElectronMethods):
         a_pm_arr = np.zeros(len(self.data.elements.columns))
         tau_pm_arr = np.zeros(len(self.data.elements.columns))
         for i, col in enumerate(self.data.elements.columns):
-            test_element = self.data.elements[col][injection_idx:extraction_idx]
+            test_element = self.data.elements[col].loc[injection_idx:extraction_idx]
             xdata = np.array(np.arange(len(test_element)), dtype=float)
             ydata = np.array(test_element.values, dtype=float).reshape(-1)
 
