@@ -9,15 +9,8 @@ from .LifeTimeCalculator import Calculator
 
 class Plots:
     @staticmethod
-    def get_lifetimes_from_sigma_estimates(
-        path: str = "BeamGas/DataHandler/", ring_type: str = "PS"
-    ) -> None:
-        data = DataObject(
-            ring_type=ring_type,
-            gas_fraction=path + "Gas_fractions.csv",
-            pressure=path + "Pressure_data.csv",
-            projectile=path + "Projectile_data.csv",
-        )
+    def get_lifetimes_from_sigma_estimates(ring_type: str = "PS") -> None:
+        data = DataObject(ring_type=ring_type)
         ps_object = Calculator(data)
         tau = ps_object.calculate_full_lifetime()
 
@@ -32,7 +25,6 @@ class Plots:
 
     @staticmethod
     def get_sigma_estimates_with_varying_i_p(
-        path: str = "BeamGas/DataHandler/",
         projectile: str = "O4",
         ring_type: str = "PS",
     ) -> None:
@@ -51,12 +43,7 @@ class Plots:
         # I_p_list = [0.01361806, 13.61806, 13.67]  # corresponds to [website KeV, website eV, our data]
         I_p_list = np.linspace(0.01, 20, 50)
         for I_p in I_p_list:
-            data = DataObject(
-                ring_type=ring_type,
-                gas_fraction=path + "Gas_fractions.csv",
-                pressure=path + "Pressure_data.csv",
-                projectile=path + "Projectile_data.csv",
-            )
+            data = DataObject(ring_type=ring_type)
             ps_object = Calculator(data)
             ps_object.I_p = I_p
             sigma_el, sigma_ec = ps_object.get_all_molecular_sigmas()
@@ -84,7 +71,6 @@ class Plots:
 
     @staticmethod
     def get_sigma_estimates_with_varying_n_0(
-        path: str = "BeamGas/DataHandler/",
         projectile: str = "O4",
         ring_type: str = "PS",
     ) -> None:
@@ -94,12 +80,7 @@ class Plots:
             1, 11
         )  # corresponds to [website KeV, website eV, our data]
         for n_0 in n_0_list:
-            data = DataObject(
-                ring_type=ring_type,
-                gas_fraction=path + "Gas_fractions.csv",
-                pressure=path + "Pressure_data.csv",
-                projectile=path + "Projectile_data.csv",
-            )
+            data = DataObject(ring_type=ring_type)
             ps_object = Calculator(data)
             ps_object.n_0 = n_0
             sigma_el, sigma_ec = ps_object.get_all_molecular_sigmas()
@@ -127,8 +108,7 @@ class Plots:
 
     @staticmethod
     def get_lifetime_from_data(
-        path: str = "BeamGas/DataHandler/",
-        data_path: str = "BeamDataHandler/",
+        data_path: str = "Files/BeamData/",
         date: str = "2022-11-18 0815-2350",
         ring_type: str = "PS",
     ) -> None:
@@ -141,13 +121,8 @@ class Plots:
         """
         # Todo: Maybe setup test such that sigma is calculated for all tau values found from the data and give a
         #  confidence measure for the sigma estimate based on the different cycles.
-        data = DataObject(
-            ring_type=ring_type,
-            gas_fraction=path + "Gas_fractions.csv",
-            pressure=path + "Pressure_data.csv",
-            projectile=path + "Projectile_data.csv",
-        )
-        data_path = path + data_path
+        data = DataObject(ring_type=ring_type)
+        data_path = data_path
         data.get_data(data_path, date)
 
         ps_object = Calculator(data)
