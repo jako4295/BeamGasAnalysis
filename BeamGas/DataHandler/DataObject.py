@@ -248,7 +248,7 @@ class DataObject(BeamData):
                 82,
                 82,
                 5.414,
-                5,
+                3,
             ],
         ]
         data_columns = [
