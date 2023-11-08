@@ -33,7 +33,7 @@ class BeamData:
         self.df_info = pd.read_csv(path + info_path, index_col=0)
 
         self.nxcals_timestamp = self.df_info["nxcals_timestamp"]
-        self.nxcals_timestamp2 = self.df_info["nxcals_timestamp2"]
+        # self.nxcals_timestamp2 = self.df_info["nxcals_timestamp2"]
         # self.cycle_times = pd.to_datetime(self.nxcals_timestamp2) - pd.to_datetime(
         #     self.nxcals_timestamp
         # )
