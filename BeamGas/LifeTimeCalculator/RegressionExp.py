@@ -209,9 +209,9 @@ class StatisticalSummary:
             f"a is estimated to: {optimal_params[0]:.2e} +- {a_pm:.2e}\nb is"
             + f" estimated to: {optimal_params[1]:.2e} +- {tau_pm:.2e} \nR^2={r_squared:.5f}\nLifetime is "
             + " " * 10
-            + f"{optimal_params[1]*data.sample_frequency[idx]} \nLifetime upper bound: "
-            + f"{(optimal_params[1] - tau_pm)*data.sample_frequency[idx]} \nLifetime lower bound: "
-            + f"{(optimal_params[1] + tau_pm)*data.sample_frequency[idx]}\n"
+            + f"{optimal_params[1]*(1 / data.sample_frequency)} \nLifetime upper bound: "
+            + f"{(optimal_params[1] - tau_pm)*(1 / data.sample_frequency)} \nLifetime lower bound: "
+            + f"{(optimal_params[1] + tau_pm)*(1 / data.sample_frequency)}\n"
         )
 
         return a_pm, tau_pm

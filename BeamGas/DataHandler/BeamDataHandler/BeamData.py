@@ -34,8 +34,10 @@ class BeamData:
 
         self.nxcals_timestamp = self.df_info["nxcals_timestamp"]
         self.nxcals_timestamp2 = self.df_info["nxcals_timestamp2"]
-        self.cycle_times = pd.to_datetime(self.nxcals_timestamp2) - pd.to_datetime(
-            self.nxcals_timestamp
+        # self.cycle_times = pd.to_datetime(self.nxcals_timestamp2) - pd.to_datetime(
+        #     self.nxcals_timestamp
+        # )
+        self.sample_frequency = len(self.elements) / (
+            self.elements.index[-1] + self.elements.index[1]
         )
-        self.sample_frequency = self.cycle_times / len(self.elements)
         self.name = self.df_info["nxcals_variable_name"]
